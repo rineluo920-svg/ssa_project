@@ -7,7 +7,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import UserRegistrationForm, EmailAuthenticationForm
+from .forms import UserRegistrationForm, EmailAuthenticationForm, TopUpForm
+from .models import Transaction
 
 RECAPTCHA_VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify"
 
@@ -89,3 +90,25 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Successfully logged out.")
     return redirect('users:login')
+
+@login_required
+def top_up_balance(request):
+    profile = request.user.profile
+    if request.method == "POST":
+        form = TopUpForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            profile.balance += amount
+            profile.save()
+            Transaction.objects.create(user=request.user, amount=amount)
+            messages.success(request, f"Your balance has been topped up by ${amount}.")
+            return redirect('users:top_up')
+
+    else:
+        form = TopUpForm()
+        context = {
+        'form': form,
+        'user_balance': request.user.profile.balance,
+        'welcome_message': f"Welcome back, {profile.nickname}!",
+        }
+        return render(request, 'users/top_up.html', context)

@@ -11,6 +11,7 @@ from .models import Event
 @login_required
 def home(request):
     user = request.user
+    profile = request.user.profile  # Get the logged-in user's profile
     pending_invitations = user.pending_invitations.all() # Get pending group invitations for the current user
     user_groups = user.group_memberships.all()  # Get groups the user is a member of
     user_join_requests = GroupJoinRequest.objects.filter(user=user)  # Get join requests sent by the user
