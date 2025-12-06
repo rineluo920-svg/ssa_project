@@ -98,6 +98,19 @@
                 {% if request.user == group.admin %}
                     <a href="{% url 'chipin:delete_event' group.id event.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this event?');">Delete Event</a>
                 {% endif %}
+
+                {% if request.user == group.admin and not event.is_archived and not event.is_pending %}
+                    <form action="{% url 'chipin:transfer_funds' group.id event.id %}"
+                          method="post"
+                          style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-success"
+                                onclick="return confirm('Transfer funds for this event? This action is irreversible.');">
+                            Transfer Funds
+                        </button>
+                    </form>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>

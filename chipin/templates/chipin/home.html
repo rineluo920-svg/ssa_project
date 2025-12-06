@@ -5,6 +5,47 @@
     <h1>ChipIn</h1>
     <h1>Current Balance: ${{ balance }}</h1>
     <a href="{% url 'users:top_up' %}">Top Up Balance</a>
+    <h2>Transactions</h2>
+
+    <div style="max-height: 300px; overflow-y: auto; margin-bottom: 16px;">
+        <table style="border-collapse: collapse; width: 100%;">
+            <thead>
+                <tr>
+                    <th style="border-bottom: 1px solid #ccc; text-align: left; padding: 8px;">
+                        Date
+                    </th>
+                    <th style="border-bottom: 1px solid #ccc; text-align: left; padding: 8px;">
+                        Amount
+                    </th>
+                    <th style="border-bottom: 1px solid #ccc; text-align: left; padding: 8px;">
+                        Description
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for tx in transactions %}
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                            {{ tx.created_at }}
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                            ${{ tx.amount }}
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                            {{ tx.description }}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" style="padding: 8px;">
+                            No transactions to display.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <h2>Group Invitations</h2>
     <div class="invitation-notification">
         {% if pending_invitations %}
